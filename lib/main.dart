@@ -3,6 +3,7 @@ import 'firebase_options.dart';
 import 'package:flick_go/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 
 import 'pages/homePage.dart';
 void main() async {
@@ -12,6 +13,7 @@ void main() async {
   );
   FirebaseUIAuth.configureProviders([
     EmailAuthProvider(),
+    GoogleProvider(clientId: 'Your client ID here'),
   ]);
   runApp(const MyApp());
 }
