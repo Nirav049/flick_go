@@ -1,3 +1,5 @@
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flick_go/navigationBar.dart';
 import 'package:flick_go/pages/movie_details.dart';
 import 'package:flick_go/services/http_services.dart';
@@ -106,22 +108,22 @@ class _HomePageState extends State<HomePage> {
           ),
           FutureBuilder<List<Map<String, dynamic>>>(
             future: fetchTrendingMovies(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+            builder: (context, trendingSnapshot) {
+              if (trendingSnapshot.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator(); // Show a loading indicator while fetching data.
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              } else if (trendingSnapshot.hasError) {
+                return Text('Error: ${trendingSnapshot.error}');
+              } else if (!trendingSnapshot.hasData ||
+                  trendingSnapshot.data!.isEmpty) {
                 return Text('No trending movies available.');
               } else {
-                final trendingMovies = snapshot.data;
+                final trendingMovies = trendingSnapshot.data;
 
                 return SizedBox(
-                  height: 251,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
+
+                  child: CarouselSlider.builder(
                     itemCount: trendingMovies!.length,
-                    itemBuilder: (context, index) {
+                    itemBuilder: (context, index, realIndex) {
                       final movie = trendingMovies[index];
                       final movieTitle = movie['title'];
                       final posterPath = movie['poster_path'];
@@ -131,41 +133,58 @@ class _HomePageState extends State<HomePage> {
                       return InkWell(
                         onTap: () {
                           // Handle movie selection
-                          Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => Movie_details(),
-                          ));
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  MovieDetailScreen(movie: movie), // Pass the selected movie
+                            ),
+                          );
                         },
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 2),
-                          padding: EdgeInsets.symmetric(
-                              vertical: _deviceHeight! * 0.01, horizontal: 0),
-                          width: 130,
-                          height: 160,
-                          child: Column(
-                            children: [
-                              CachedNetworkImage(
-                                imageUrl: posterUrl,
-                                height: _deviceHeight! * 0.20,
-                                width: _deviceWidth! * 0.85,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 2),
+                            padding: EdgeInsets.symmetric(
+                                vertical: _deviceHeight! * 0.01, horizontal: 1),
+                            width: 130,
+                            height: 160,
+                            child: Column(
+                              children: [
+                                CachedNetworkImage(
+                                  imageUrl: posterUrl,
+                                  height: _deviceHeight! * 0.20,
+                                  width: _deviceWidth! * 0.85,
                                 fit: BoxFit.cover,
                               ),
-                              SizedBox(height: 1),
-                              Text(
-                                movieTitle,
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.black),
-                                textAlign: TextAlign.center,
-                              ),
+
+                              // Text(
+                              //   movieTitle,
+                              //   style:
+                              //   TextStyle(fontSize: 15, color: Colors.black),
+                              //   textAlign: TextAlign.center,
+                              // ),
                             ],
                           ),
                         ),
+                        ),
+
                       );
                     },
+                    options: CarouselOptions(
+                      viewportFraction: 0.30,
+                      enlargeCenterPage: true,
+                      pageSnapping: true,
+                      autoPlay: true, // Set autoPlay to true
+                      autoPlayInterval: Duration(seconds: 3), // Set autoPlay interval
+                      autoPlayAnimationDuration: Duration(milliseconds: 800), // Animation duration
+                      autoPlayCurve: Curves.fastOutSlowIn, // Animation curve
+                    ),
                   ),
                 );
               }
             },
           ),
+
           // Popular Movies Section
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -212,10 +231,12 @@ class _HomePageState extends State<HomePage> {
 
                       return InkWell(
                         onTap: () {
-                          // Handle movie selection.
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => Movie_details(),
-                          ));
+                          // Handle movie selection
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => MovieDetailScreen(movie: movie), // Pass the selected movie
+                            ),
+                          );
                         },
                         child: Container(
                           margin: EdgeInsets.symmetric(horizontal: 2),
@@ -231,11 +252,11 @@ class _HomePageState extends State<HomePage> {
                                 width: _deviceWidth! * 0.85,
                                 fit: BoxFit.cover,
                               ),
-                              SizedBox(height: 4),
+                              SizedBox(height: 1),
                               Text(
                                 movieTitle,
                                 style: TextStyle(
-                                    fontSize: 14, color: Colors.black),
+                                    fontSize: 15, color: Colors.black),
                                 textAlign: TextAlign.center,
                               ),
                             ],
@@ -294,10 +315,12 @@ class _HomePageState extends State<HomePage> {
 
                       return InkWell(
                         onTap: () {
-                          // Handle movie selection.
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => Movie_details(),
-                          ));
+                          // Handle movie selection
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => MovieDetailScreen(movie: movie), // Pass the selected movie
+                            ),
+                          );
                         },
                         child: Container(
                           margin: EdgeInsets.symmetric(horizontal: 2),

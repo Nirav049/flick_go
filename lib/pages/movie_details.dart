@@ -1,196 +1,180 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flick_go/model/movie.dart';
 
-class Movie_details extends StatefulWidget {
-  Movie_details({super.key});
+class MovieDetailScreen extends StatelessWidget {
+  final Map<String, dynamic>? movie;
 
-  @override
-  State<Movie_details> createState() => _Movie_detailsState();
-}
-
-class _Movie_detailsState extends State<Movie_details> {
-  double? _deviceHeight;
-  double? _deviceWidth;
+  MovieDetailScreen({required this.movie});
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
+    if (movie == null) {
+      // Handle the case where movie data is null
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Movie Details'),
+          backgroundColor: Color.fromRGBO(33, 150, 243, 1),
+        ),
+        body: Center(
+          child: Text('Movie data not available.'),
+        ),
+      );
+    }
+
+    final List<Map<String, dynamic>> topCast =
+        movie!['credits']?['cast'] as List<Map<String, dynamic>>? ?? [];
+    final double? rating = movie!['rating'];
+    final String ratingString = rating != null ? rating.toStringAsFixed(1) : 'N/A';
     return Scaffold(
+      appBar: AppBar(
+        title: Text(movie!['title'] ?? 'Movie Details'),
+        backgroundColor: Color.fromRGBO(33, 150, 243, 1),
+      ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-                color: Colors.yellow,
-                width: _deviceWidth,
-                height: _deviceHeight! * 0.5,
-                child: Image.asset("assets/images/icons/Flick GO.png")),
-            Container(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Title(
-                        color: Colors.black,
-                        child: Text(
-                          "Stranger Things",
-                          style: TextStyle(fontSize: 35),
-                        ),
-                      ),
-                      IconButton(
-                          onPressed: () {},
-                          icon: ImageIcon(
-                              AssetImage("assets/images/icons/heart.png"),size: 30,)),
-                    ],
-                  ),
-                  Column(children: [
-                    Text(
-                      "In 1980s Indiana, a group of young friends witness supernatural forces and secret government exploits. As they search for answers, the children unravel a series of extraordinary mysteries.",
-                      maxLines: 4,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      softWrap: true,
-                    ),
-                  ]),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 105,
-                        height: 28,
-                        child: Text(
-                          'Top Cast',
-                          style: TextStyle(
-                            color: Color(0xFF2196F3),
-                            fontSize: 18,
-                            fontFamily: 'Gotham',
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(
-                        height: 100,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            for (int i = 0; i < 5; i++)
-                              InkWell(
-                                onTap: () {},
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 5),
-                                  color: Colors.brown.shade400,
-                                  width: 75,
-                                  child: Center(
-                                    child: Text(
-                                      (i + 1).toString(),
-                                      style: TextStyle(
-                                          fontSize: 40, color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 105,
-                        height: 28,
-                        child: Text(
-                          "Rate This",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF2196F3),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (int i = 0; i < 5; i++)
-                        Icon(
-                          Icons.star_border,
-                          size: 60,
-                          color: Color(0xFF2196F3),
-                        )
-                    ],
-                  ),
-                  Stack(
-                    children: [
-                      Container(
-                          width: 281,
-                          height: 91,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: Color(0xfff3faff))),
-                      Text("Write Your Review",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          )),
-                      Container(
-                          width: 103,
-                          height: 24,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
-                              color: Color(0xff2196f3))),
-                      Container(
-                          width: 103,
-                          height: 24,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6))),
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: Text("Submit",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                            )),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: Text("Back",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                            )),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-
-              // decoration: BoxDecoration(
-              //   borderRadius: BorderRadius.circular(60),
-              //   boxShadow: [
-              //     BoxShadow(color: Colors.white, spreadRadius: 30),
-              //   ],
-              // ),
+            // Movie Poster
+            Image.network(
+              'https://image.tmdb.org/t/p/w500/${movie!['poster_path'] ?? ''}',
+              width: double.infinity,
+              height: 600,
+              fit: BoxFit.cover,
             ),
+
+            // Movie Overview
+            SizedBox(height: 16),
+            Text(
+              'Overview:',
+              style: TextStyle(
+                color: Color(0xFF2196F3),
+                fontSize: 18,
+                fontFamily: 'Gotham',
+                fontWeight: FontWeight.w700,
+                height: 0,
+              ),
+            ),
+            Text(
+              movie!['overview'] ?? 'No overview available',
+              style: TextStyle(
+                color: Color(0xFF4B95DD),
+                fontSize: 12,
+                fontFamily: 'Gotham Light',
+                fontWeight: FontWeight.w500,
+                height: 0,
+              ),
+            ),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                // Ratings
+                Text(
+                  'Ratings:',
+                  style: TextStyle(
+                    color: Color(0xFF2196F3),
+                    fontSize: 14,
+                    fontFamily: 'Gotham',
+                    fontWeight: FontWeight.w700,
+                    height: 0,
+                  ),
+                ),
+                Icon(
+                  Icons.favorite,
+                  color: Color(0xFF4B95DD), // Heart icon color
+                  size: 24,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  rating.toString(), // Display the rating string or 'N/A' if not available
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+
+            // Release Date
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  'Release Date:',
+                  style: TextStyle(
+                    color: Color(0xFF2196F3),
+                    fontSize: 14,
+                    fontFamily: 'Gotham',
+                    fontWeight: FontWeight.w700,
+                    height: 0,
+                  ),
+                ),
+                Text(
+                  movie!['release_date'] ?? 'Unknown',
+                  style: TextStyle(
+                    color: Color(0xFF2196F3),
+                    fontSize: 12,
+                    fontFamily: 'Gotham',
+                    fontWeight: FontWeight.w700,
+                    height: 0,
+                  ),
+                ),
+              ],
+            ),
+
+            // Top Cast
+            SizedBox(height: 16),
+            Text(
+              'Top Cast:',
+              style: TextStyle(
+                color: Color(0xFF2196F3),
+                fontSize: 14,
+                fontFamily: 'Gotham',
+                fontWeight: FontWeight.w700,
+                height: 0,
+              ),
+            ),
+            // Display top cast members with photos and names
+            SizedBox(
+              height: 100,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: topCast.length,
+                itemBuilder: (context, index) {
+                  final castMember = topCast[index];
+                  final actorName = castMember['name'] ?? 'Unknown';
+                  final actorPhotoUrl = castMember['profile_path'] != null
+                      ? 'https://image.tmdb.org/t/p/w185/${castMember['profile_path']}'
+                      : 'https://example.com/placeholder.jpg'; // Use a placeholder image URL if no photo is available
+
+                  return Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundImage: NetworkImage(actorPhotoUrl),
+                      ),
+                      SizedBox(height: 4),
+                      Text(actorName),
+                    ],
+                  );
+                },
+              ),
+            ),
+
+            // Comments
+            SizedBox(height: 16),
+            Text(
+              'Comments:',
+              style: TextStyle(
+                color: Color(0xFF2196F3),
+                fontSize: 14,
+                fontFamily: 'Gotham',
+                fontWeight: FontWeight.w700,
+                height: 0,
+              ),
+            ),
+            // Add comments or reviews here
+
+            // Add ratings information here
+
+            // Add more movie details as needed
           ],
         ),
       ),

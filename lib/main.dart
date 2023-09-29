@@ -1,4 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flick_go/pages/splash_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
 import 'package:flick_go/auth.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,12 @@ void main() async {
     EmailAuthProvider(),
     GoogleProvider(clientId: 'Your client ID here'),
   ]);
-  runApp(const MyApp());
+  runApp(SplashPage(
+    key: UniqueKey(),
+    onInitializationComplete: () => runApp(ProviderScope(
+      child: MyApp(),
+    )),
+  ),);
 }
 
 class MyApp extends StatelessWidget {
