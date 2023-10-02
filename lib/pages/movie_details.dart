@@ -6,6 +6,7 @@ class MovieDetailScreen extends StatelessWidget {
 
   MovieDetailScreen({required this.movie});
 
+
   @override
   Widget build(BuildContext context) {
     if (movie == null) {
@@ -67,9 +68,8 @@ class MovieDetailScreen extends StatelessWidget {
             SizedBox(height: 16),
             Row(
               children: [
-                // Ratings
                 Text(
-                  'Ratings:',
+                  'Vote Average:',
                   style: TextStyle(
                     color: Color(0xFF2196F3),
                     fontSize: 14,
@@ -79,13 +79,15 @@ class MovieDetailScreen extends StatelessWidget {
                   ),
                 ),
                 Icon(
-                  Icons.favorite,
-                  color: Color(0xFF4B95DD), // Heart icon color
+                  Icons.favorite, // You can use a star icon for the vote average
+                  color: Color(0xFF2196F3), // Star color
                   size: 24,
                 ),
                 SizedBox(width: 8),
                 Text(
-                  rating.toString(), // Display the rating string or 'N/A' if not available
+                  movie!['vote_average'] != null
+                      ? movie!['vote_average'].toStringAsFixed(1)
+                      : 'N/A',
                   style: TextStyle(fontSize: 18),
                 ),
               ],

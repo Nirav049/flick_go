@@ -4,7 +4,7 @@ import './movie.dart';
 
 
 class MainPageData {
-  final List<Movie> movie;
+  final List<MovieDetails> movie;
   final int page;
   final String searchCategory;
   final String searchText;
@@ -18,7 +18,7 @@ class MainPageData {
         searchText = '';
 
   MainPageData copyWith(
-      {List<Movie>? movie,
+      {List<MovieDetails>? movie,
         int? page,
         String? searchCategory,
         String? searchText}) {

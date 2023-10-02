@@ -31,8 +31,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         leading: Container(
-          height: 100,
-          width: 100,
           child: Image.asset(
             'assets/images/icons/Flick GO.png',
             fit: BoxFit.cover,
@@ -83,279 +81,276 @@ class _HomePageState extends State<HomePage> {
       fontWeight: FontWeight.w700,
       color: Color.fromRGBO(33, 150, 243, 1),
     );
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          //Trending Now section
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Trending Now",
-                style: heading,
-              ),
-              Text(
-                "see all",
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: Color.fromRGBO(33, 150, 243, 1),
+    return Column(
+      children: [
+        Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Trending Now",
+                  style: heading,
                 ),
-              ),
-            ],
-          ),
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: fetchTrendingMovies(),
-            builder: (context, trendingSnapshot) {
-              if (trendingSnapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator(); // Show a loading indicator while fetching data.
-              } else if (trendingSnapshot.hasError) {
-                return Text('Error: ${trendingSnapshot.error}');
-              } else if (!trendingSnapshot.hasData ||
-                  trendingSnapshot.data!.isEmpty) {
-                return Text('No trending movies available.');
-              } else {
-                final trendingMovies = trendingSnapshot.data;
+                Text(
+                  "see all",
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: Color.fromRGBO(33, 150, 243, 1),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 190, // Fixed height for the CarouselSlider
+              child: SingleChildScrollView(
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: fetchTrendingMovies(),
+                  builder: (context, trendingSnapshot) {
+                    if (trendingSnapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (trendingSnapshot.hasError) {
+                      return Center(child: Text('Error: ${trendingSnapshot.error}'));
+                    } else if (!trendingSnapshot.hasData ||
+                        trendingSnapshot.data!.isEmpty) {
+                      return Center(child: Text('No trending movies available.'));
+                    } else {
+                      final trendingMovies = trendingSnapshot.data;
 
-                return SizedBox(
+                      return CarouselSlider.builder(
+                        itemCount: trendingMovies!.length,
+                        itemBuilder: (context, index, realIndex) {
+                          final movie = trendingMovies[index];
+                          final movieTitle = movie['title'];
+                          final posterPath = movie['poster_path'];
+                          final posterUrl = 'https://image.tmdb.org/t/p/w185$posterPath';
 
-                  child: CarouselSlider.builder(
-                    itemCount: trendingMovies!.length,
-                    itemBuilder: (context, index, realIndex) {
-                      final movie = trendingMovies[index];
-                      final movieTitle = movie['title'];
-                      final posterPath = movie['poster_path'];
-                      final posterUrl =
-                          'https://image.tmdb.org/t/p/w185$posterPath';
-
-                      return InkWell(
-                        onTap: () {
-                          // Handle movie selection
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  MovieDetailScreen(movie: movie), // Pass the selected movie
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      MovieDetailScreen(movie: movie),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 8),
+                              child: Column(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: CachedNetworkImage(
+                                      imageUrl: posterUrl,
+                                      height: 140,
+                                      width: 220,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  SizedBox(height: 1),
+                                  Text(
+                                    movieTitle,
+                                    style: TextStyle(fontSize: 15, color: Colors.black),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 16,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 2),
-                            padding: EdgeInsets.symmetric(
-                                vertical: _deviceHeight! * 0.01, horizontal: 1),
-                            width: 130,
-                            height: 160,
-                            child: Column(
-                              children: [
-                                CachedNetworkImage(
-                                  imageUrl: posterUrl,
-                                  height: _deviceHeight! * 0.20,
-                                  width: _deviceWidth! * 0.85,
-                                fit: BoxFit.cover,
-                              ),
-
-                              // Text(
-                              //   movieTitle,
-                              //   style:
-                              //   TextStyle(fontSize: 15, color: Colors.black),
-                              //   textAlign: TextAlign.center,
-                              // ),
-                            ],
-                          ),
+                        options: CarouselOptions(
+                          viewportFraction: 0.65,
+                          enlargeCenterPage: true,
+                          pageSnapping: true,
+                          autoPlay: true,
+                          autoPlayInterval: Duration(seconds: 3),
+                          autoPlayAnimationDuration: Duration(milliseconds: 800),
+                          autoPlayCurve: Curves.fastOutSlowIn,
                         ),
-                        ),
-
                       );
-                    },
-                    options: CarouselOptions(
-                      viewportFraction: 0.30,
-                      enlargeCenterPage: true,
-                      pageSnapping: true,
-                      autoPlay: true, // Set autoPlay to true
-                      autoPlayInterval: Duration(seconds: 3), // Set autoPlay interval
-                      autoPlayAnimationDuration: Duration(milliseconds: 800), // Animation duration
-                      autoPlayCurve: Curves.fastOutSlowIn, // Animation curve
-                    ),
-                  ),
-                );
-              }
-            },
-          ),
-
-          // Popular Movies Section
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "popular",
-                style: heading,
-              ),
-              Text(
-                "see all",
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: Color.fromRGBO(33, 150, 243, 1),
+                    }
+                  },
                 ),
               ),
-            ],
-          ),
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: fetchPopularMovies(),
-            builder: (context, popularSnapshot) {
-              if (popularSnapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator(); // Show a loading indicator while fetching data.
-              } else if (popularSnapshot.hasError) {
-                return Text('Error: ${popularSnapshot.error}');
-              } else if (!popularSnapshot.hasData ||
-                  popularSnapshot.data!.isEmpty) {
-                return Text('No popular movies available.');
-              } else {
-                final popularMovies = popularSnapshot.data;
+            ),
+          ],
+        ),
 
-                return SizedBox(
-                  height: 251,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: popularMovies!.length,
-                    itemBuilder: (context, index) {
-                      final movie = popularMovies[index];
-                      final movieTitle = movie['title'];
-                      final posterPath = movie['poster_path'];
-
-                      final posterUrl =
-                          'https://image.tmdb.org/t/p/w185$posterPath';
-
-                      return InkWell(
-                        onTap: () {
-                          // Handle movie selection
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => MovieDetailScreen(movie: movie), // Pass the selected movie
-                            ),
-                          );
-                        },
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 2),
-                          padding: EdgeInsets.symmetric(
-                              vertical: _deviceHeight! * 0.01, horizontal: 0),
-                          width: 130,
-                          height: 160,
-                          child: Column(
-                            children: [
-                              CachedNetworkImage(
-                                imageUrl: posterUrl,
-                                height: _deviceHeight! * 0.20,
-                                width: _deviceWidth! * 0.85,
-                                fit: BoxFit.cover,
-                              ),
-                              SizedBox(height: 1),
-                              Text(
-                                movieTitle,
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.black),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              }
-            },
-          ),
-          //upcoming section
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "upcoming",
-                style: heading,
+        // Popular Movies Section
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "popular",
+              style: heading,
+            ),
+            Text(
+              "see all",
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: Color.fromRGBO(33, 150, 243, 1),
               ),
-              Text(
-                "see all",
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: Color.fromRGBO(33, 150, 243, 1),
+            ),
+          ],
+        ),
+        FutureBuilder<List<Map<String, dynamic>>>(
+          future: fetchPopularMovies(),
+          builder: (context, popularSnapshot) {
+            if (popularSnapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Show a loading indicator while fetching data.
+            } else if (popularSnapshot.hasError) {
+              return Text('Error: ${popularSnapshot.error}');
+            } else if (!popularSnapshot.hasData ||
+                popularSnapshot.data!.isEmpty) {
+              return Text('No popular movies available.');
+            } else {
+              final popularMovies = popularSnapshot.data;
+
+              return SizedBox(
+                height: 251,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: popularMovies!.length,
+                  itemBuilder: (context, index) {
+                    final movie = popularMovies[index];
+                    final movieTitle = movie['title'];
+                    final posterPath = movie['poster_path'];
+
+                    final posterUrl =
+                        'https://image.tmdb.org/t/p/w185$posterPath';
+
+                    return InkWell(
+                      onTap: () {
+                        // Handle movie selection
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => MovieDetailScreen(
+                                movie: movie), // Pass the selected movie
+                          ),
+                        );
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 2),
+                        padding: EdgeInsets.symmetric(
+                            vertical: _deviceHeight! * 0.01, horizontal: 0),
+                        width: 130,
+                        height: 160,
+                        child: Column(
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: posterUrl,
+                              height: _deviceHeight! * 0.20,
+                              width: _deviceWidth! * 0.85,
+                              fit: BoxFit.cover,
+                            ),
+                            SizedBox(height: 1),
+                            Text(
+                              movieTitle,
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.black),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
+              );
+            }
+          },
+        ),
+        //upcoming section
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "upcoming",
+              style: heading,
+            ),
+            Text(
+              "see all",
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: Color.fromRGBO(33, 150, 243, 1),
               ),
-            ],
-          ),
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: fetchUpcomingMovies(),
-            builder: (context, upcomingSnapshot) {
-              if (upcomingSnapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator(); // Show a loading indicator while fetching data.
-              } else if (upcomingSnapshot.hasError) {
-                return Text('Error: ${upcomingSnapshot.error}');
-              } else if (!upcomingSnapshot.hasData ||
-                  upcomingSnapshot.data!.isEmpty) {
-                return Text('No upcoming movies available.');
-              } else {
-                final upcomingMovies = upcomingSnapshot.data;
+            ),
+          ],
+        ),
+        FutureBuilder<List<Map<String, dynamic>>>(
+          future: fetchUpcomingMovies(),
+          builder: (context, upcomingSnapshot) {
+            if (upcomingSnapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Show a loading indicator while fetching data.
+            } else if (upcomingSnapshot.hasError) {
+              return Text('Error: ${upcomingSnapshot.error}');
+            } else if (!upcomingSnapshot.hasData ||
+                upcomingSnapshot.data!.isEmpty) {
+              return Text('No upcoming movies available.');
+            } else {
+              final upcomingMovies = upcomingSnapshot.data;
 
-                return SizedBox(
-                  height: 255,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: upcomingMovies!.length,
-                    itemBuilder: (context, index) {
-                      final movie = upcomingMovies[index];
-                      final movieTitle = movie['title'];
-                      final posterPath = movie['poster_path'];
+              return SizedBox(
+                height: 255,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: upcomingMovies!.length,
+                  itemBuilder: (context, index) {
+                    final movie = upcomingMovies[index];
+                    final movieTitle = movie['title'];
+                    final posterPath = movie['poster_path'];
 
-                      final posterUrl =
-                          'https://image.tmdb.org/t/p/w185$posterPath';
+                    final posterUrl =
+                        'https://image.tmdb.org/t/p/w185$posterPath';
 
-                      return InkWell(
-                        onTap: () {
-                          // Handle movie selection
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => MovieDetailScreen(movie: movie), // Pass the selected movie
-                            ),
-                          );
-                        },
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 2),
-                          padding: EdgeInsets.symmetric(
-                              vertical: _deviceHeight! * 0.01, horizontal: 1),
-                          width: 130,
-                          height: 160,
-                          child: Column(
-                            children: [
-                              CachedNetworkImage(
-                                imageUrl: posterUrl,
-                                height: _deviceHeight! * 0.20,
-                                width: _deviceWidth! * 0.85,
-                                fit: BoxFit.cover,
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                movieTitle,
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.black),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                    return InkWell(
+                      onTap: () {
+                        // Handle movie selection
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => MovieDetailScreen(
+                                movie: movie), // Pass the selected movie
                           ),
+                        );
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 2),
+                        padding: EdgeInsets.symmetric(
+                            vertical: _deviceHeight! * 0.01, horizontal: 1),
+                        width: 130,
+                        height: 160,
+                        child: Column(
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: posterUrl,
+                              height: _deviceHeight! * 0.20,
+                              width: _deviceWidth! * 0.85,
+                              fit: BoxFit.cover,
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              movieTitle,
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.black),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                  ),
-                );
-              }
-            },
-          ),
-        ],
-      ),
-    ]);
+                      ),
+                    );
+                  },
+                ),
+              );
+            }
+          },
+        ),
+      ],
+    );
   }
 
   Widget _sideBar(BuildContext) {
