@@ -2,9 +2,11 @@ import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flick_go/navigationBar.dart';
 import 'package:flick_go/pages/movie_details.dart';
+import 'package:flick_go/pages/profile.dart';
 import 'package:flick_go/services/http_services.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({super.key});
@@ -17,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   double? _deviceHeight;
   double? _deviceWidth;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -28,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         leading: Container(
@@ -354,14 +358,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _sideBar(BuildContext) {
+    User? user = _auth.currentUser;
     return Drawer(
       child: Container(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text('Your Name'),
-              accountEmail: Text('youremail@example.com'),
+              accountName: Text(' ${user?.displayName ?? ''}'),
+              accountEmail: Text('${user?.email ?? ''}'),
               currentAccountPicture: CircleAvatar(
                 backgroundImage: AssetImage(
                     "assets/images/icons/profile.png"), // Replace with your image
@@ -417,6 +422,11 @@ class _HomePageState extends State<HomePage> {
               title: Text('Settings'),
               onTap: () {
                 // Navigate to the settings page
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(), // Pass the selected movie
+                  ),
+                );
               },
             ),
             // Add more drawer items as needed
