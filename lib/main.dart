@@ -27,7 +27,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
 
-   const MyApp({super.key});
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -56,12 +56,11 @@ class _MyHomepageState extends State<MyHomepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Auth_screen(),
-        // appBar: AppBar(
-        // //   title: const Text('Flick Go'),
-        // //   backgroundColor: Color.fromRGBO(33, 150, 243, 1),
-        // // ),
+      // appBar: AppBar(
+      // //   title: const Text('Flick Go'),
+      // //   backgroundColor: Color.fromRGBO(33, 150, 243, 1),
+      // // ),
 
     );
   }
 }
-

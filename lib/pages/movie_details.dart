@@ -1,43 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:flick_go/model/movie.dart';
 
-class MovieDetailScreen extends StatelessWidget {
+class MovieDetailScreen extends StatefulWidget {
   final Map<String, dynamic>? movie;
 
   MovieDetailScreen({required this.movie});
 
+  @override
+  State<MovieDetailScreen> createState() => _MovieDetailScreenState();
+}
+
+class _MovieDetailScreenState extends State<MovieDetailScreen> {
+  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
-    if (movie == null) {
-      // Handle the case where movie data is null
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Movie Details'),
-          backgroundColor: Color.fromRGBO(33, 150, 243, 1),
-        ),
-        body: Center(
-          child: Text('Movie data not available.'),
-        ),
-      );
-    }
+    List<Map<String, dynamic>> topCast = [];
 
-    final List<Map<String, dynamic>> topCast =
-        movie!['credits']?['cast'] as List<Map<String, dynamic>>? ?? [];
-    final double? rating = movie!['rating'];
-    final String ratingString = rating != null ? rating.toStringAsFixed(1) : 'N/A';
+    // Check if the movie data is available and if the 'credits' field exists.
+    if (widget.movie != null && widget.movie!['credits'] != null) {
+      // Retrieve the 'cast' list from the 'credits' field.
+      final List<dynamic>? castList = widget.movie!['credits']['cast'];
+
+      // Check if the 'castList' is not null and not empty.
+      if (castList != null && castList.isNotEmpty) {
+        // Assign 'castList' to 'topCast' if it's valid.
+        topCast = List<Map<String, dynamic>>.from(castList);
+      }
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text(movie!['title'] ?? 'Movie Details'),
+        title: Text(widget.movie?['title'] ?? 'Movie Details'),
         backgroundColor: Color.fromRGBO(33, 150, 243, 1),
+        actions: [
+
+          if (widget.movie != null)
+            IconButton(
+              icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,color: Colors.black,),
+              onPressed: () {
+                // Toggle the favorite status
+                setState(() {
+                  isFavorite = !isFavorite;
+                });
+
+                // If the movie is marked as a favorite, add it to the favorites list
+                if (isFavorite) {
+                  // Here, you should add your movie data to a list of favorite movies.
+                  // You can use a global list or a state management solution for this.
+                  // For simplicity, I'll demonstrate adding it to a global list here.
+                  favoritesList.add(widget.movie!);
+                } else {
+                  // If it's no longer a favorite, remove it from the favorites list.
+                  favoritesList.remove(widget.movie);
+                }
+              },
+            ),
+        ],
       ),
       body: SingleChildScrollView(
-        child: Column(
+        child: widget.movie != null
+            ? Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Movie Poster
             Image.network(
-              'https://image.tmdb.org/t/p/w500/${movie!['poster_path'] ?? ''}',
+              'https://image.tmdb.org/t/p/w500/${widget.movie!['poster_path'] ?? ''}',
               width: double.infinity,
               height: 600,
               fit: BoxFit.cover,
@@ -52,21 +78,19 @@ class MovieDetailScreen extends StatelessWidget {
                 fontSize: 18,
                 fontFamily: 'Gotham',
                 fontWeight: FontWeight.w700,
-                height: 0,
               ),
             ),
             Text(
-              movie!['overview'] ?? 'No overview available',
+              widget.movie!['overview'] ?? 'No overview available',
               style: TextStyle(
                 color: Color(0xFF4B95DD),
                 fontSize: 12,
                 fontFamily: 'Gotham Light',
-                fontWeight: FontWeight.w500,
-                height: 0,
               ),
             ),
             SizedBox(height: 16),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
                   'Vote Average:',
@@ -75,18 +99,17 @@ class MovieDetailScreen extends StatelessWidget {
                     fontSize: 14,
                     fontFamily: 'Gotham',
                     fontWeight: FontWeight.w700,
-                    height: 0,
                   ),
                 ),
                 Icon(
-                  Icons.favorite, // You can use a star icon for the vote average
+                  Icons.star,
                   color: Color(0xFF2196F3), // Star color
                   size: 24,
                 ),
                 SizedBox(width: 8),
                 Text(
-                  movie!['vote_average'] != null
-                      ? movie!['vote_average'].toStringAsFixed(1)
+                  widget.movie!['vote_average'] != null
+                      ? widget.movie!['vote_average'].toStringAsFixed(1)
                       : 'N/A',
                   style: TextStyle(fontSize: 18),
                 ),
@@ -105,17 +128,15 @@ class MovieDetailScreen extends StatelessWidget {
                     fontSize: 14,
                     fontFamily: 'Gotham',
                     fontWeight: FontWeight.w700,
-                    height: 0,
                   ),
                 ),
                 Text(
-                  movie!['release_date'] ?? 'Unknown',
+                  widget.movie!['release_date'] ?? 'Unknown',
                   style: TextStyle(
                     color: Color(0xFF2196F3),
                     fontSize: 12,
                     fontFamily: 'Gotham',
                     fontWeight: FontWeight.w700,
-                    height: 0,
                   ),
                 ),
               ],
@@ -130,10 +151,10 @@ class MovieDetailScreen extends StatelessWidget {
                 fontSize: 14,
                 fontFamily: 'Gotham',
                 fontWeight: FontWeight.w700,
-                height: 0,
               ),
             ),
-            // Display top cast members with photos and names
+
+// Display top cast members with photos and names
             SizedBox(
               height: 100,
               child: ListView.builder(
@@ -169,7 +190,6 @@ class MovieDetailScreen extends StatelessWidget {
                 fontSize: 14,
                 fontFamily: 'Gotham',
                 fontWeight: FontWeight.w700,
-                height: 0,
               ),
             ),
             // Add comments or reviews here
@@ -178,8 +198,16 @@ class MovieDetailScreen extends StatelessWidget {
 
             // Add more movie details as needed
           ],
+        )
+            : Center(
+          child: Text('Movie data not available.'),
         ),
       ),
     );
   }
 }
+
+// This is a global list to store favorite movies.
+List<Map<String, dynamic>> favoritesList = [];
+
+// Define your FavoritesPage class here
