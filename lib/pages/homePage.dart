@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+    User? user = _auth.currentUser;
 
     return Scaffold(
       appBar: AppBar(
@@ -46,11 +47,9 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Scaffold.of(context).openEndDrawer();
               },
-              child: CircleAvatar(
-                backgroundImage: AssetImage(
-                  'assets/images/icons/profile.png',
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(user?.photoURL ?? ''),
                 ),
-              ),
             );
           })
         ],
@@ -112,13 +111,16 @@ class _HomePageState extends State<HomePage> {
                 child: FutureBuilder<List<Map<String, dynamic>>>(
                   future: fetchTrendingMovies(),
                   builder: (context, trendingSnapshot) {
-                    if (trendingSnapshot.connectionState == ConnectionState.waiting) {
+                    if (trendingSnapshot.connectionState ==
+                        ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (trendingSnapshot.hasError) {
-                      return Center(child: Text('Error: ${trendingSnapshot.error}'));
+                      return Center(
+                          child: Text('Error: ${trendingSnapshot.error}'));
                     } else if (!trendingSnapshot.hasData ||
                         trendingSnapshot.data!.isEmpty) {
-                      return Center(child: Text('No trending movies available.'));
+                      return Center(
+                          child: Text('No trending movies available.'));
                     } else {
                       final trendingMovies = trendingSnapshot.data;
 
@@ -128,7 +130,8 @@ class _HomePageState extends State<HomePage> {
                           final movie = trendingMovies[index];
                           final movieTitle = movie['title'];
                           final posterPath = movie['poster_path'];
-                          final posterUrl = 'https://image.tmdb.org/t/p/w185$posterPath';
+                          final posterUrl =
+                              'https://image.tmdb.org/t/p/w185$posterPath';
 
                           return GestureDetector(
                             onTap: () {
@@ -155,7 +158,8 @@ class _HomePageState extends State<HomePage> {
                                   SizedBox(height: 1),
                                   Text(
                                     movieTitle,
-                                    style: TextStyle(fontSize: 15, color: Colors.black),
+                                    style: TextStyle(
+                                        fontSize: 15, color: Colors.black),
                                     textAlign: TextAlign.center,
                                     maxLines: 16,
                                     overflow: TextOverflow.ellipsis,
@@ -171,7 +175,8 @@ class _HomePageState extends State<HomePage> {
                           pageSnapping: true,
                           autoPlay: true,
                           autoPlayInterval: Duration(seconds: 3),
-                          autoPlayAnimationDuration: Duration(milliseconds: 800),
+                          autoPlayAnimationDuration:
+                              Duration(milliseconds: 800),
                           autoPlayCurve: Curves.fastOutSlowIn,
                         ),
                       );
@@ -194,7 +199,7 @@ class _HomePageState extends State<HomePage> {
             Text(
               "see all",
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: FontWeight.w400,
                 color: Color.fromRGBO(33, 150, 243, 1),
               ),
@@ -215,7 +220,7 @@ class _HomePageState extends State<HomePage> {
               final popularMovies = popularSnapshot.data;
 
               return SizedBox(
-                height: 251,
+                height: 281,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: popularMovies!.length,
@@ -300,7 +305,7 @@ class _HomePageState extends State<HomePage> {
               final upcomingMovies = upcomingSnapshot.data;
 
               return SizedBox(
-                height: 255,
+                height: 281,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: upcomingMovies!.length,
@@ -368,63 +373,22 @@ class _HomePageState extends State<HomePage> {
               accountName: Text(' ${user?.displayName ?? ''}'),
               accountEmail: Text('${user?.email ?? ''}'),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage(
-                    "assets/images/icons/profile.png"), // Replace with your image
+                backgroundImage: NetworkImage(user?.photoURL ?? ''),
               ),
               decoration: BoxDecoration(
                 color: Color.fromRGBO(33, 150, 243, 1),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Rated by you",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  height: 100,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      for (int i = 0; i < 5; i++)
-                        InkWell(
-                          onTap: () {},
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 5),
-                            color: Colors.brown.shade400,
-                            width: 75,
-                            child: Center(
-                              child: Text(
-                                (i + 1).toString(),
-                                style: TextStyle(
-                                    fontSize: 40, color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
+              leading: Icon(Icons.person),
+              title: Text('Go To Profile'),
               onTap: () {
                 // Navigate to the settings page
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(), // Pass the selected movie
+                    builder: (context) =>
+                        ProfilePage(), // Pass the selected movie
                   ),
                 );
               },

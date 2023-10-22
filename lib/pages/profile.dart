@@ -1,6 +1,6 @@
-import 'package:flick_go/main.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flick_go/main.dart'; // Replace with your app's main page import
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -41,7 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ElevatedButton(
               onPressed: () async {
                 await _auth.signOut();
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MyHomepage()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MyHomepage())); // Replace MyHomePage with your main page
               },
               child: Text('Log Out'),
             ),
