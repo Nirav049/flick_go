@@ -50,7 +50,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(25),
                           child: Container(
-                            height: 235,
+                            height: 225,
                             width: 190,
                             child: Image.network(
                               'https://image.tmdb.org/t/p/w185/${movie['poster_path'] ?? ''}',

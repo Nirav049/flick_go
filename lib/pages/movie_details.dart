@@ -32,7 +32,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         title: Text(widget.movie?['title'] ?? 'Movie Details'),
         backgroundColor: Color.fromRGBO(33, 150, 243, 1),
         actions: [
-
           if (widget.movie != null)
             IconButton(
               icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,color: Colors.black,),

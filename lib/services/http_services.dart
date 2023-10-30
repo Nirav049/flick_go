@@ -38,7 +38,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const apiKey = '92a3819765c0405b6fd4199a163d60ad';
+const apiKey = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
 Future<List<Map<String, dynamic>>> fetchTrendingMovies() async {
 

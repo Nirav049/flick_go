@@ -168,7 +168,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future<void> _performSearch(String query) async {
-    final apiKey = '92a3819765c0405b6fd4199a163d60ad';
+    final apiKey = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
     final url = Uri.parse(
       'https://api.themoviedb.org/3/search/movie?api_key=$apiKey&query=$query',
     );
